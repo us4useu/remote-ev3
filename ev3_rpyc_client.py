@@ -21,6 +21,8 @@ class RemoteEV3:
             "run_rel": self.c.root.run_rel_pos,
             "run_timed": self.c.root.run_timed,
             "run_direct": self.c.root.run_direct,
+            "wait": self.c.root.wait,
+            "wait_to_stop": self.c.root.wait_until_not_moving,
             "is_running": self.c.root.is_running,
             "is_ramping": self.c.root.is_ramping,
             "is_holding": self.c.root.is_ramping,

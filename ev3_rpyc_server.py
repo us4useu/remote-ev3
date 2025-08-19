@@ -54,6 +54,14 @@ class MyService(rpyc.Service):
     def run_direct(self, speed, duty_cycle):
         self.m.run_direct(speed_sp=speed, duty_cycle_sp=duty_cycle)
 
+    @log_decorator("Waiting")
+    def wait(self, cond, timeout=None):
+        self.m.wait(cond, timeout=timeout)
+
+    @log_decorator("Waiting until not moving")
+    def wait_until_not_moving(self, timeout=None):
+        self.m.wait_until_not_moving(timeout=timeout)
+
     def is_running(self) -> bool:
         return self.m.is_running
 
