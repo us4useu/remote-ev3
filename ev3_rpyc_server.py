@@ -54,6 +54,18 @@ class MyService(rpyc.Service):
     def run_direct(self, speed, duty_cycle):
         self.m.run_direct(speed_sp=speed, duty_cycle_sp=duty_cycle)
 
+    def on_for_rotations(self, speed, rotations, brake=True, block=True):
+        self.m.on_for_rotations(speed, rotations, brake=brake, block=block)
+
+    def on_for_degrees(self, speed, degrees, brake=True, block=True):
+        self.m.on_for_degrees(speed, degrees, brake=brake, block=block)
+
+    def on_to_position(self, speed, position, brake=True, block=True):
+        self.m.on_to_position(speed, position, brake=brake, block=block)
+
+    def on_for_seconds(self, speed, seconds, brake=True, block=True):
+        self.m.on_for_seconds(speed, seconds, brake=brake, block=block)
+
     @log_decorator("Waiting")
     def wait(self, cond, timeout=None):
         self.m.wait(cond, timeout=timeout)
