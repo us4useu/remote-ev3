@@ -2,6 +2,7 @@
 import rpyc
 import logging
 from ev3dev2.motor import Motor, OUTPUT_A
+
 logger = logging.getLogger(__name__)
 
 
@@ -10,8 +11,11 @@ def log_decorator(log_text):
         def wrapper(*args, **kwargs):
             print(log_text)
             func(*args, **kwargs)
+
         return wrapper
+
     return inner
+
 
 class MyService(rpyc.Service):
     @log_decorator("Connected")
@@ -21,7 +25,7 @@ class MyService(rpyc.Service):
     @log_decorator("Disconnected, robot deactivated")
     def on_disconnect(self, conn):
         self.m.stop()
-    
+
     @log_decorator("Changed motor")
     def change_output(self, output):
         self.m = Motor(output)
@@ -31,18 +35,39 @@ class MyService(rpyc.Service):
         self.m.run_forever(speed_sp=speed)
 
     @log_decorator("Running motor to absolute position")
-    def run_abs_pos(self, speed, position, stop_action='brake'):
-        self.m.run_to_abs_pos(speed_sp=speed, 
-                position_sp=position, stop_action=stop_action)
+    def run_abs_pos(self, speed, position, stop_action="brake"):
+        self.m.run_to_abs_pos(
+            speed_sp=speed, position_sp=position, stop_action=stop_action
+        )
+
+    @log_decorator("Running motor to relative position")
+    def run_rel_pos(self, speed, position, stop_action="brake"):
+        self.m.run_to_rel_pos(
+            speed_sp=speed, position_sp=position, stop_action=stop_action
+        )
 
     @log_decorator("Running motor for some time")
-    def run_timed(self, speed, time, stop_action= 'brake'):
-        self.m.run_timed(speed_sp=speed,
-                time_sp=time, stop_action=stop_action)
+    def run_timed(self, speed, time, stop_action="brake"):
+        self.m.run_timed(speed_sp=speed, time_sp=time, stop_action=stop_action)
 
     @log_decorator("Running motor with direct cycle speed")
     def run_direct(self, speed, duty_cycle):
         self.m.run_direct(speed_sp=speed, duty_cycle_sp=duty_cycle)
+
+    def is_running(self) -> bool:
+        return self.m.is_running
+
+    def is_ramping(self) -> bool:
+        return self.m.is_ramping
+
+    def is_holding(self) -> bool:
+        return self.m.is_holding
+
+    def is_overloaded(self) -> bool:
+        return self.m.is_overloaded
+
+    def is_stalled(self) -> bool:
+        return self.m.is_stalled
 
     @log_decorator("Resetting all values")
     def reset(self):
@@ -52,10 +77,16 @@ class MyService(rpyc.Service):
     def stop(self):
         self.m.stop()
 
+
 if __name__ == "__main__":
     from rpyc.utils.server import ThreadedServer
-    t = ThreadedServer(MyService, port=18861, protocol_config={
-        'allow_public_attrs': True,
-        })
+
+    t = ThreadedServer(
+        MyService,
+        port=18861,
+        protocol_config={
+            "allow_public_attrs": True,
+        },
+    )
     print("Starting server")
     t.start()
